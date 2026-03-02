@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.venv/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Environment / secrets
+.env
+.env.*
+*.env
+
+# Model files (large — store in Git LFS or cloud if needed)
+# Comment these out if you want to track the pkl
+# *.pkl
+
+# Data files (large)
+*.csv
+*.geojson
+*.shp
+*.dbf
+*.shx
+*.prj
+*.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# HTML output maps (very large — 18MB each)
+*.html
+
+# Logs
+*.log
+logs/
