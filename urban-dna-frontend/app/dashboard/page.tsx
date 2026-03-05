@@ -286,8 +286,10 @@ export default function Dashboard() {
                 initialViewState={INITIAL_VIEW_STATE}
                 controller
                 viewState={viewState}
-                onViewStateChange={({ viewState: vs }: { viewState: typeof INITIAL_VIEW_STATE }) => setViewState(vs)}
-                onClick={handleClick}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onViewStateChange={({ viewState: vs }: any) => setViewState(vs)}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onClick={(info: any) => handleClick(info)}
             >
                 <Map
                     reuseMaps
@@ -339,7 +341,6 @@ export default function Dashboard() {
                             style={{
                                 all: "unset", flex: 1, fontSize: "0.75rem", color: "#f8fafc",
                                 fontFamily: "Inter, sans-serif",
-                                "::placeholder": { color: "#334155" } as React.CSSProperties,
                             }}
                         />
                     </div>
