@@ -604,7 +604,7 @@ def compute_features(
     if include_multiscale:
         multiscale = compute_multiscale_density(gdf_m, radii=[50.0, 100.0, 250.0])
         feat = pd.concat([feat, multiscale], axis=1)
-        print(f"[compute_features] ✓ Multi-scale density computed (50m, 100m, 250m)")
+        print(f"[compute_features] Multi-scale density computed (50m, 100m, 250m)")
     
     # ─── TIER 3: Orientation & Entropy ───────────────────────────────────────
     if include_orientation:
@@ -618,7 +618,7 @@ def compute_features(
         coherence = compute_orientation_coherence(gdf_m, radius_m=100.0)
         
         feat = pd.concat([feat, gdf_m["orientation"], entropy, coherence], axis=1)
-        print(f"[compute_features] ✓ Orientation analysis computed (angle + entropy + coherence)")
+        print(f"[compute_features] Orientation analysis computed (angle + entropy + coherence)")
     
     # ─── Preserve lat/lon for mapping ────────────────────────────────────────
     feat["lat"] = gdf.geometry.centroid.y.values
@@ -633,7 +633,7 @@ def compute_features(
     feat = feat.replace([np.inf, -np.inf], np.nan).dropna(subset=MODEL_FEATURES)
     feat = feat.reset_index(drop=True)
     
-    print(f"[compute_features] ✓ Final dataset: {len(feat):,} buildings × {len(feat.columns)} features")
+    print(f"[compute_features] Final dataset: {len(feat):,} buildings × {len(feat.columns)} features")
     return feat
 
 

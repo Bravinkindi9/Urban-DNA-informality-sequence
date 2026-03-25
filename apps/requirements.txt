@@ -1,9 +1,0 @@
-streamlit
-pydeck
-geopy
-geopandas
-pandas
-numpy
-scikit-learn
-matplotlib
-seaborn

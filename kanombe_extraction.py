@@ -69,10 +69,10 @@ except Exception as e:
 # Coordinates: [min_lon, min_lat, max_lon, max_lat]
 
 KANOMBE_BBOX = [
-    30.1100,  # min_lon (west)
-    -1.9700,  # min_lat (south)
-    30.1500,  # max_lon (east)
-    -1.9300   # max_lat (north)
+    30.1250,  # min_lon (west)
+    -1.9650,  # min_lat (south)
+    30.1450,  # max_lon (east)
+    -1.9450   # max_lat (north)
 ]
 
 print("\n" + "="*70)
@@ -196,26 +196,42 @@ if not export_success and count_filtered <= 5000:
     except Exception as e:
         print(f"[!] Manual export failed: {e}")
 
-# Method 3: Export to Google Drive (required when count > 5000 - EE's getInfo limit)
+# Method 3: Chunked local export (bypasses EE's 5000-feature getInfo limit)
 if not export_success and count_filtered > 5000:
-    print(f"\n[!] Earth Engine limits direct download to 5000 features. You have {count_filtered:,}.")
-    print("[*] Starting export to your Google Drive...")
+    print(f"\n[!] Earth Engine blocks direct download > 5000 features.")
+    print(f"    You have {count_filtered:,} filtered buildings.")
+    print("[*] Performing chunked local export instead (<=5000 features per request)...")
+
     try:
-        task = ee.batch.Export.table.toDrive(
-            collection=buildings_filtered,
-            description='kanombe_buildings',
-            folder='EarthEngine',
-            fileFormat='GeoJSON'
-        )
-        task.start()
-        print("[OK] Export task started!")
-        print("\n   1. Go to: https://code.earthengine.google.com/tasks")
-        print("   2. Wait for the task to complete (may take 2-10 min)")
-        print("   3. Download kanombe_buildings.geojson from Google Drive > EarthEngine folder")
-        print("   4. Move it to this folder and re-run feature.py")
-        sys.exit(0)
+        # Keep each chunk safely under the 5000 feature limit.
+        chunk_size = 2000
+        all_features = []
+        total = int(count_filtered)
+
+        for start in range(0, total, chunk_size):
+            size = min(chunk_size, total - start)
+            print(f"   - Fetching chunk: offset={start}, size={size}")
+
+            # Convert the selected slice into a FeatureCollection, then getInfo()
+            chunk_list = buildings_filtered.toList(size, start)
+            chunk_fc = ee.FeatureCollection(chunk_list)
+            chunk_info = chunk_fc.getInfo()
+
+            # chunk_info is a GeoJSON-like dict
+            chunk_features = chunk_info.get("features", [])
+            all_features.extend(chunk_features)
+
+        geojson_obj = {"type": "FeatureCollection", "features": all_features}
+        print(f"[OK] Chunked export assembled: {len(all_features):,} features")
+
+        print("[...] Writing combined GeoJSON to local file...")
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            json.dump(geojson_obj, f)
+
+        print(f"[OK] Local export complete: {OUTPUT_FILE}")
+        export_success = True
     except Exception as e:
-        print(f"[X] Export to Drive failed: {e}")
+        print(f"[X] Chunked export failed: {e}")
 
 if not export_success:
     print(f"[X] FATAL: All export methods failed")
@@ -362,7 +378,7 @@ print(f"   Preview map: kanombe_preview.html")
 
 print(f"\nNEXT STEP: Run feature engineering")
 print(f"\n   Python code:")
-print(f"   ─────────────────────────────────────")
+print(f"   ----------------------------------------------------")
 print(f"   from feature import compute_features, load_geojson")
 print(f"   ")
 print(f"   gdf = load_geojson('{OUTPUT_FILE}')")
