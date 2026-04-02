@@ -1,28 +1,31 @@
-## Project Illiya: Morphological Fingerprinting of Urban Informality
+# Project Illiya: Morphological Fingerprinting of Urban Informality
 
 ### The Objective
-Detecting informal settlements in Kigali using unsupervised spatial statistics on vector geometries (Google Open Buildings V3).
+To map urban settlement formality (Informal, Planned Residential, Large Formal Infrastructure) at scale across sub-Saharan Africa. This project abandons the dominant, cloud-dependent, supervised Deep Learning paradigm in favor of an **unsupervised, vector-based morphometric pipeline** utilizing Google Open Buildings V3 footprints. 
 
-### The Pipeline (The “Least to Highest”)
-- **Level 1 (Data)**: Automated extraction of **9,369** building footprints from Google Earth Engine.
-- **Level 2 (Feature Engineering)**: Calculation of **15 morphology features**, centered on **Orientation Entropy (Shannon \(H\))** and **Multi-Scale Density Ratios**.
-- **Level 3 (The Model)**: A **50-seed K-Means ensemble** protocol (\(K=3\), k-means++ init) for initialization-robust clustering.
-- **Level 4 (Validation)**: **Mean Pairwise ARI = 0.964**, demonstrating exceptional cluster stability under random initialization.
+### Core Achievements
+- **Zero Label Dependency:** Fully unsupervised classification pipeline.
+- **Cloud-Agnostic:** Operates exclusively on vector geometry, bypassing the optical imagery constraints that cripple CNNs in equatorial Africa.
+- **Exceptional Stability:** Achieved a **Mean Pairwise ARI of 0.964** across a 50-seed K-Means ensemble, proving rigorous initialization-robustness.
+- **Published Preprint:** Successfully authored a 7-page, IEEE-formatted academic preprint detailing the methodology and theoretical implications. 
+
+### The Star Metrics
+Rather than relying on black-box feature extractors, the pipeline engineers 15 physically interpretable spatial features. The classification is driven by two novel metrics:
+1. **Orientation Entropy (Shannon $H$):** Distinguishes the directional disorder of organically grown informal fabric from the grid-aligned regularity of planned development.
+2. **Density Ratios:** Captures the scale-dependent micro-clustering that characterizes informal settlements vs. scale-invariant planned spacing.
 
 ### Directory Map
-- **`src/`**: Academic pipeline stages (clustering + figure generation).
-  - `src/clustering.py`: K-sweep (K=2..5) with validation indices + K=3 ensemble ARI stability + consensus labeling; outputs Fig 1–4 and `kanombe_clustered_final.csv`.
-  - `src/generate_map.py`: Publication-ready static thematic map; outputs Fig 5.
-- **`paper/figures/`**: Publication-ready figure outputs.
-  - Fig 1: Elbow plot (Inertia vs K)
-  - Fig 2: Validation indices (Silhouette, Calinski–Harabasz, Davies–Bouldin vs K)
-  - Fig 3: PCA embedding scatter (K=3 consensus)
-  - Fig 4: Boxplots for star metrics (orientation_entropy, density_ratio)
-  - Fig 5: Spatial thematic cluster map (EPSG:4326)
-- **Core scripts**
-  - `kanombe_extraction.py`: Earth Engine extraction of Open Buildings V3 polygons for Kanombe AOI.
-  - `feature.py`: Morphology feature engineering (Tier 1–3), including multi-scale density + orientation entropy.
-  - `run_features.py`: Produces `kanombe_features_academic.csv` and prints key statistics.
+- 📁 **`paper/`**: Contains the final 7-page IEEE-formatted academic preprint (`Illiya.pdf`), the raw LaTeX source code (`illiya.tex`), and high-resolution figures.
+- 📁 **`src/`**: The core Python pipeline.
+  - `kanombe_extraction.py`: GEE extraction of building polygons.
+  - `feature.py` & `run_features.py`: 15-feature morphology engineering.
+  - `clustering.py`: K=3 ensemble clustering, validation, and statistical figure generation.
+  - `generate_map.py`: High-resolution spatial thematic mapping.
+- 📁 **`data/`**: Processed `.csv` and `.geojson` geometries for the Kanombe AOI (9,369 footprints).
+- 📁 **`results/`**: Interactive HTML previews of the study area.
 
-### Current Status
-**Phase 2 (Engineering & Validation) Complete. Transitioning to Phase 3 (Preprint Authoring).**
+### Visual Abstract
+*(See the `/paper/figures/` directory for full-resolution outputs including PCA embeddings, Validation Indices, and Star Metric distributions.)*
+
+### Status
+**✅ Phase 3 Complete.** The methodology is validated, the ensemble is stable, and the preprint is finalized. Ready for scale deployment or temporal change-detection extensions.
